@@ -1,0 +1,190 @@
+body {
+  width: 100%;
+
+  margin: 0;
+  height: 100vh;
+  justify-content: center;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  background-color: #222;
+}
+
+.overlay {
+  position: relative;
+  width: 740px;
+  height: 400px;
+  background-image: url("./BG.png");
+  background-repeat: no-repeat; /* 繰り返しなし */
+  background-position: center;
+  background-size: cover; /* 枠内にきれいに収める */
+
+  overflow: hidden;
+  /* text-align: center;*/
+}
+
+.item1 {
+  position: absolute;
+  width: 200px;
+
+  z-index: 10;
+  top: 50%;
+  left: 100%;
+  margin: 0 auto;
+}
+.moving {
+  animation: identifier 4s linear;
+}
+.moving-mid {
+  animation: identifier 2.5s linear forwards;
+}
+.moving-fast {
+  animation: identifier 2s linear forwards;
+}
+.moving-die {
+  animation: identifier 1s linear forwards;
+}
+
+@keyframes identifier {
+  0% {
+    left: 100%;
+    transform: translateY(-50%);
+  }
+  100% {
+    left: -200px;
+    transform: translateY(-50%);
+  }
+}
+/* ボタンはこのサイトを参考にしました：https://saruwakakun.com/html-css/reference/buttons */
+.btn-circle-3d {
+  display: inline-block;
+  text-decoration: none;
+
+  color: #fff;
+  width: 80px;
+  height: 80px;
+  line-height: 80px;
+  border-radius: 50%;
+  text-align: center;
+  font-weight: bold;
+  overflow: hidden;
+  box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.29);
+  border-bottom: solid 3px #6d6f72;
+  transition: 0.4s;
+  z-index: 700;
+}
+
+.btn-circle-3d:active {
+  -webkit-transform: translateY(2px);
+  transform: translateY(2px);
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0.15);
+  border-bottom: none;
+}
+
+/* モーダル全体の背景（playingがfalseの時に出る） */
+.screen {
+  position: absolute; /* overlayに対して絶対配置 */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(10px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* 全ての要素の最前面 */
+}
+
+/* モーダルの中の白いパネル */
+.white-panel {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 40px 60px;
+  border-radius: 10px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+/* ボタンの配置設定 */
+.buttons {
+  position: absolute;
+  bottom: 40px; /* 下から40pxの位置に固定 */
+  left: 0;
+  width: 100%; /* 横幅いっぱいに広げて中央揃えしやすくする */
+  display: flex;
+  justify-content: center;
+  gap: 100px; /* ボタン同士の間隔 */
+  z-index: 700;
+}
+
+.screen {
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  z-index: 1000;
+}
+.roul {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+
+  font-family: "Inter", "Helvetica Neue", Arial, sans-serif;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.6;
+  letter-spacing: 0.03em;
+  color: #111;
+
+  background: #fff;
+  padding: 14px 20px; /* ← scoreと高さ感を合わせる */
+  border-radius: 10px;
+
+  max-width: 460px;
+  text-align: left;
+
+  border-left: 4px solid #1e88e5; /* ← 太さをscoreと揃える */
+
+  z-index: 600;
+}
+
+/* アイコンの代わりに「小さな光る点」を作る */
+
+.char {
+  position: absolute;
+  top: 10%;
+  left: 90%;
+}
+.score {
+  position: absolute;
+  background: #ceebf3;
+  padding: 20px 16px;
+  border-radius: 8px;
+  top: 3%;
+  right: 24px;
+  left: auto;
+}
+
+.manual-box {
+  position: absolute;
+
+  background: #fff;
+  margin: 1rem;
+  padding: 20px;
+  border: 1px solid #00aaff;
+  max-width: 300px;
+  text-align: left;
+}
+.manual-box button {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+  background: #111;
+  color: #fff;
+  border: none;
+  padding: 5px;
+}

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>あなた専用のフォルダ分けサイトへ</title>
+    <script src="https://unpkg.com/petite-vue" defer init></script>
+    <link href="a.css" rel="stylesheet" />
+  </head>
+
+  <body v-scope="dataset()">
+    <div class="overlay">
+      <div v-if="!playing" class="screen">
+        <div v-if="showM" class="manual-box">
+          <p>
+            ようこそ、<br />あなたのフォルダ整理サイトへ<br />あなたが整理しなかったフォルダを今回は整理してもらいます。<br />【整理ルール】<br />指名された印を「残す」、それ以外は「捨てる」。<br />
+            <span style="color: red"
+              >※ベルトコンベアに流れてくる分身は必ず「捨てる」こと。</span
+            >
+            <br />
+            <br />by あなたのパソコン管理者
+          </p>
+
+          <button @click="showM = false">OK</button>
+        </div>
+        <div>
+          <h1 @click="gameStart" style="cursor: pointer">
+            {{ loading ? '解析中...' : 'GAME START' }}
+          </h1>
+          <p v-if="score">0">前回のスコア: {{ score }}</p>
+          <small @click="showM = !showM" style="cursor: pointer; color: #888"
+            >操作説明を表示</small
+          >
+        </div>
+      </div>
+      <img
+        :key="minNo"
+        :src="`ch${minNo}.png`"
+        class="item1"
+        :class="{ 
+          'moving': playing && score < 10,
+          'moving-mid': playing && score >= 10 && score < 30,
+          'moving-fast': playing && score >= 30 && score < 50,
+          'moving-die':
+          playing && score >= 50
+            }"
+        @animationend="onMiss"
+      />
+
+      <div class="ui-area">
+        <div class="roul" v-if="queA !== null ">
+          今回のルール: {{ queA ? '「マル」を残せ！' : '「バツ」を残せ！' }}
+        </div>
+
+        <p class="score">スコア: {{ score }}</p>
+        <p v-if="loading">あなたのパソコンを解析中</p>
+
+        <div class="buttons">
+          <div
+            class="btn-circle-3d"
+            @click="judge(true)"
+            style="background-color: #dc143c"
+          >
+            残す
+          </div>
+
+          <div
+            class="btn-circle-3d"
+            @click="judge(false)"
+            style="background-color: #4682b4"
+          >
+            捨てる
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script>
+    function dataset() {
+      return {
+        queA: null,
+        queB: null,
+        score: 0,
+        minNo: 0,
+        judg: null,
+        bloom: false,
+        playing: false,
+        loading: false,
+        itm: null,
+        count: 0,
+        showM: false,
+
+        items: [
+          { char: "ch0.png", type: true },
+          { char: "ch1.png", type: false },
+          { char: "ch2.png", type: "NG" },
+        ],
+        async mounted() {
+          console.log("準備開始...");
+          this.loading = true;
+          if (this.skipM) this.showM = false;
+          try {
+            const res = await fetch("https://randomjs.com/api/boolean");
+            const json = await res.json();
+            this.queA = json.data;
+            this.loading = false;
+          } catch (e) {
+            console.log("エラー");
+            this.queA = true;
+            this.loading = false;
+          }
+        },
+        async gameStart() {
+          this.score = 0;
+          this.count = 0;
+          localStorage.setItem("skip", this.skipM);
+          if (this.queA === null) {
+            await this.mounted();
+          }
+          this.nextQue();
+          this.playing = true;
+          this.nextQue();
+        },
+        async nextQue() {
+          if (!this.playing) return;
+          this.judg = false;
+          this.bloom = false;
+
+          const rndI = Math.floor(Math.random() * this.items.length);
+
+          this.itm = this.items[rndI];
+          this.minNo = rndI;
+
+          try {
+            setTimeout(() => {
+              this.judg = true;
+              this.bloom = true;
+            }, 50);
+          } catch (e) {
+            console.error("APIエラー", e);
+            this.loading = false;
+          }
+        },
+        judge(play) {
+          console.log("クリック出来てる");
+          if (!this.judg) return;
+          let num = false;
+          if (this.itm.type === "NG") {
+            num = play === false;
+          } else {
+            const ans = this.itm.type === this.queA;
+            num = play === ans;
+          }
+
+          if (num) {
+            this.score += 1;
+            this.count += 1;
+            this.anime();
+            this.nextQue();
+          } else {
+            this.gameOver();
+          }
+        },
+        gameOver() {
+          this.playing = false;
+          this.bloom = false;
+          // clearTimeout(this.timer);
+          alert("GAME OVER スコア：" + this.score);
+          location.reload();
+          this.count = 0;
+          this.anime();
+        },
+
+        onMiss() {
+          if (this.bloom) {
+            this.gameOver();
+          }
+        },
+
+        anime() {
+          const el = document.querySelector(".item1");
+          el.style.animation = "none";
+          el.offsetHeight;
+          el.style.animation = "";
+        },
+      };
+    }
+  </script>
+</html>
